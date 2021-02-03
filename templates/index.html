@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Aresibo</h1>
+
+
+<form action="/check/" method="POST">
+  {% csrf_token %}
+  Latitude:<br>
+  <input type="text" name="latitude">
+  <br>
+  Longitude:<br>
+  <input type="text" name="longitude">
+  <br><br>
+  <input type="submit" value="Submit">
+</form>
+
+{% if obj %}
+<p>bingo</p>
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,9 @@
+certifi==2020.12.5
+chardet==4.0.0
+Django==2.2.9
+idna==2.10
+pyproj==2.5.0
+pytz==2019.3
+requests==2.25.1
+sqlparse==0.3.0
+urllib3==1.26.2
