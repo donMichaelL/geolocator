@@ -71,10 +71,10 @@ class Observation:
 class CheckView(TemplateView):
     template_name = "index.html"
 
-    def ciram_rulez(self, observations, vehicle_id, timestamp, p_timestamp):
+    def ciram_rulez(self, observations, vehicle_id, timestamp, tracked_objects):
         # getLevels?risks=risk1&distance=40
-        # http://localhost:8000/check/?lon=-0.4728026&lat=39.5000516&p_lon=-0.4728766104653172&p_lat=39.50017239337358&vehicle_id=1&timestamp=1609756314926&p_timestamp=1609756319926
-        import requests
+        # "GET /check/?lon=21.182069778442383&lat=46.74100875854492&vehicle_id=CoptingUAV_2&timestamp=2021-01-29%2015:24:31:761&tracked_objects=[car,bus,truck]
+        import requests, urllib.parse
         payload = []
         for idx, obs in enumerate(observations):
             payload.append(('risks', 'risk'+ str(idx+1)))
@@ -83,9 +83,10 @@ class CheckView(TemplateView):
             payload.append(('longitude', obs.longitude))
         payload.append(('vehicle_id', vehicle_id))
         payload.append(('alert_start_time', timestamp))
-        payload.append(('alert_end_time', p_timestamp))
+        payload.append(('tracked_objects', tracked_objects))
         headers = {'accept': 'application/json'}
-        r = requests.get('http://ciram-api:8080/getLevels', params=payload, headers=headers)
+        payload_str = urllib.parse.urlencode(payload, safe=':+[],')
+        r = requests.get('http://ciram-api:8080/getLevels', params=payload_str, headers=headers)
         print(r.url)
         return
 
@@ -93,12 +94,10 @@ class CheckView(TemplateView):
     def get(self, request, *args, **kwargs):
         lat = request.GET.get('lat', None)
         lon = request.GET.get('lon', None)
-        p_lon = request.GET.get('p_lon', None)
-        p_lat = request.GET.get('p_lat', None)
-        timestamp = request.GET.get('timestamp', None)
-        p_timestamp = request.GET.get('p_timestamp', None)
         vehicle_id = request.GET.get('vehicle_id', None)
-        point = Point(float(p_lon), float(p_lat))
+        timestamp = request.GET.get('timestamp', None)
+        tracked_objects = request.GET.get('tracked_objects', None)
+        point = Point(float(lon), float(lat))
         (lng2, lat2) = point.coords
         observations = []
         for border in Border.objects.all():
@@ -109,7 +108,7 @@ class CheckView(TemplateView):
             dist = dist*0.001
             observations.append(Observation(lat1, lng1, dist))
         print(dist)
-        self.ciram_rulez(observations, vehicle_id, timestamp, p_timestamp)
+        self.ciram_rulez(observations, vehicle_id, timestamp, tracked_objects)
 
         return JsonResponse({
                     'alert_uuid': 'bingo',
