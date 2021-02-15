@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import re
 from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
@@ -75,18 +76,19 @@ class CheckView(TemplateView):
         # getLevels?risks=risk1&distance=40
         # "GET /check/?lon=21.182069778442383&lat=46.74100875854492&vehicle_id=CoptingUAV_2&timestamp=2021-01-29%2015:24:31:761&tracked_objects=[car,bus,truck]
         import requests, urllib.parse
-        payload = []
+        post_data = {}
         for idx, obs in enumerate(observations):
-            payload.append(('risks', 'risk'+ str(idx+1)))
-            payload.append(('distance', obs.distance))
-            payload.append(('latitude', obs.latitude))
-            payload.append(('longitude', obs.longitude))
-        payload.append(('vehicle_id', vehicle_id))
-        payload.append(('alert_start_time', timestamp))
-        payload.append(('tracked_objects', tracked_objects))
+            details = {}
+            details['distance'] = obs.distance
+            details['latitude'] = obs.latitude
+            details['longitude'] = obs.longitude
+            post_data['risk'+ str(idx+1)] = details
+        post_data['vehicle_id'] = vehicle_id
+        post_data['alert_start_time'] = timestamp
+        post_data['tracked_objects'] = re.sub(r"\[|\]", "", tracked_objects).split(',')
         headers = {'accept': 'application/json'}
-        payload_str = urllib.parse.urlencode(payload, safe=':+[],')
-        r = requests.get('http://ciram-api:8080/getLevels', params=payload_str, headers=headers)
+        print(post_data)
+        r = requests.post('http://ciram-api:8080/getLevels', json=post_data, headers=headers)
         print(r.url)
         return
 
@@ -113,11 +115,6 @@ class CheckView(TemplateView):
         return JsonResponse({
                     'alert_uuid': 'bingo',
                 })
-
-
-
-
-
 
 urlpatterns = [
     path('', admin.site.urls),
