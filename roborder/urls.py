@@ -91,7 +91,7 @@ class CheckView(TemplateView):
         post_data['tracked_objects'] = re.sub(r"\[|\]", "", tracked_objects).split(',')
         headers = {'accept': 'application/json'}
         print(post_data)
-        r = requests.post('http://ciram-api:8080/postAlerts', json=post_data, headers=headers)
+        r = requests.post('http://ciram-api:8080/postAlerts/', json=post_data, headers=headers)
         print(r.url)
         return
 
