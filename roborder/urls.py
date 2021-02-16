@@ -76,19 +76,22 @@ class CheckView(TemplateView):
         # getLevels?risks=risk1&distance=40
         # "GET /check/?lon=21.182069778442383&lat=46.74100875854492&vehicle_id=CoptingUAV_2&timestamp=2021-01-29%2015:24:31:761&tracked_objects=[car,bus,truck]
         import requests, urllib.parse
-        post_data = {}
+        risks = []
         for idx, obs in enumerate(observations):
-            details = {}
-            details['distance'] = obs.distance
-            details['latitude'] = obs.latitude
-            details['longitude'] = obs.longitude
-            post_data['risk'+ str(idx+1)] = details
+            risk = {}
+            risk['name'] = 'risk'+ str(idx+1)
+            risk['distance'] = obs.distance
+            risk['latitude'] = obs.latitude
+            risk['longitude'] = obs.longitude
+            risks.append(risk)
+        post_data = {}
+        post_data['risks'] = risks
         post_data['vehicle_id'] = vehicle_id
         post_data['alert_start_time'] = timestamp
         post_data['tracked_objects'] = re.sub(r"\[|\]", "", tracked_objects).split(',')
         headers = {'accept': 'application/json'}
         print(post_data)
-        r = requests.post('http://ciram-api:8080/getLevels', json=post_data, headers=headers)
+        r = requests.post('http://ciram-api:8080/postAlerts', json=post_data, headers=headers)
         print(r.url)
         return
 

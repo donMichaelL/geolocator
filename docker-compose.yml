@@ -12,7 +12,8 @@ services:
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
   ciram-api:
-    image: sofkost/aresiboriskanalysis
+    image: sofkost/roborderriskanalysis
+    pull_policy: always
     ports:
       - "8080:8080"
     depends_on: 
