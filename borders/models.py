@@ -10,4 +10,3 @@ class Border(models.Model):
 
     def __str__(self):
         return self.name
-39.5005, -0.47385
