@@ -1,7 +1,7 @@
 # Specify the image of the Docker Container
 # Search in dockerhub.com
 #FROM thinkwhere/gdal-python
-FROM python:3.5
+FROM python:3.8-slim-buster 
 
 # (optional) the name of the maintener
 LABEL maintainer="Michael Loukeris"
