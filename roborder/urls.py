@@ -105,13 +105,13 @@ class CheckView(TemplateView):
         point = Point(float(lon), float(lat))
         (lng2, lat2) = point.coords
         observations = []
-        for border in Border.objects.all():
-            center = border.point
-            (lng1, lat1) = center.coords
-            geod = pyproj.Geod(ellps='WGS84')
-            az12,az21,dist = geod.inv(lng1,lat1,lng2,lat2)
-            dist = dist*0.001
-            observations.append(Observation(lat1, lng1, dist))
+        border = Border.objects.order_by("?").first()
+        center = border.point
+        (lng1, lat1) = center.coords
+        geod = pyproj.Geod(ellps='WGS84')
+        az12,az21,dist = geod.inv(lng1,lat1,lng2,lat2)
+        dist = dist*0.001
+        observations.append(Observation(lat1, lng1, dist))
         print(dist)
         self.ciram_rulez(observations, vehicle_id, timestamp, tracked_objects)
 
