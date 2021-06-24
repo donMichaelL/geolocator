@@ -1,11 +1,12 @@
 from django.contrib import admin
+from django.contrib.gis.admin import OSMGeoAdmin
 
 from .models import Border
 from .forms import BorderForm
 
 
-class BorderAdmin(admin.ModelAdmin):
+@admin.register(Border)
+class BorderAdmin(OSMGeoAdmin):
     form = BorderForm
-
-admin.site.register(Border, BorderAdmin)
-# Register your models here.
+    point_zoom = 11
+    modifiable = False
